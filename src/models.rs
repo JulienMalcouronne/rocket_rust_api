@@ -17,7 +17,7 @@ pub struct NewRustacean {
 }
 
 #[derive(Queryable, Associations)]
-
+#[diesel(belongs_to(Rustacean))]
 pub struct Crate {
     pub id: i32,
     pub rustacean_id: i32,
