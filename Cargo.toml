@@ -10,7 +10,8 @@ rocket = { version = "0.5.0-rc", features = ["json"] }
 diesel = { version = "2.0.1", features = ["postgres", "chrono"] }
 chrono = { version = "0.4", features = ["serde"] }
 rocket_sync_db_pools = { version= "0.1.0-rc.3", features = ["diesel_postgres_pool"] }
-serde = {version = "1.0.136"}
+serde = {version = "1.0.136", features = ["derive"]}
+serde_json = {version = "1.0"}
 
 [dev-dependencies]
 reqwest = { version= "0.11", features = ["json", "blocking"] }
