@@ -37,6 +37,7 @@ pub struct Crate {
 #[derive(Insertable, Deserialize)]
 #[diesel(table_name = crates)]
 pub struct NewCrate {
+    #[serde(skip_deserializing)]
     pub rustacean_id: i32,
     pub code: String,
     pub name: String,
