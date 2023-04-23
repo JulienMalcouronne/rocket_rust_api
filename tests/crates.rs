@@ -94,6 +94,7 @@ fn test_view_crate() {
 fn test_update_crate() {
     let client = Client::new();
     let rustacean = common::create_test_rustacean(&client);
+    let rustacean2 = common::create_test_rustacean(&client);
 
     let a_crate = common::create_test_crate(&client, &rustacean);
 
@@ -115,6 +116,32 @@ fn test_update_crate() {
         json!({
           "id": a_crate["id"],
           "rustacean_id": rustacean["id"],
+          "code": "fooz",
+          "name": "Fooz crate",
+          "version": "O.2",
+          "description": "fooz crate description",
+          "created_at": a_crate["created_at"],
+        })
+    );
+
+    let response = client
+        .put(format!("{}/crates/{}", common::APP_HOST, a_crate["id"]))
+        .json(&json!({
+          "rustacean_id": rustacean2["id"],
+          "code": "fooz",
+          "name": "Fooz crate",
+          "version": "O.2",
+          "description": "fooz crate description",
+        }))
+        .send()
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    let a_crate: Value = response.json().unwrap();
+    assert_eq!(
+        a_crate,
+        json!({
+          "id": a_crate["id"],
+          "rustacean_id": rustacean2["id"],
           "code": "fooz",
           "name": "Fooz crate",
           "version": "O.2",
