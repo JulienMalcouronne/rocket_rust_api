@@ -1,4 +1,4 @@
-use crate::models::{Crate, NewCrate};
+use crate::models::{Crate, NewCrate, User};
 use crate::repositories::CrateRepository;
 use crate::rocket_routes::{server_error, DbConn};
 use rocket::http::Status;
@@ -7,7 +7,7 @@ use rocket::serde::json::Json;
 use rocket::serde::json::{serde_json::json, Value};
 
 #[rocket::get("/crates")]
-pub async fn get_crates(db: DbConn) -> Result<Value, Custom<Value>> {
+pub async fn get_crates(db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
     db.run(|c| {
         CrateRepository::find_multiple(c, 100)
             .map(|crates| json!(crates))
@@ -17,7 +17,7 @@ pub async fn get_crates(db: DbConn) -> Result<Value, Custom<Value>> {
 }
 
 #[rocket::get("/crates/<id>")]
-pub async fn view_crate(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
+pub async fn view_crate(id: i32, db: DbConn, _user: User) -> Result<Value, Custom<Value>> {
     db.run(move |c| {
         CrateRepository::find(c, id)
             .map(|a_crate| json!(a_crate))
@@ -30,6 +30,7 @@ pub async fn view_crate(id: i32, db: DbConn) -> Result<Value, Custom<Value>> {
 pub async fn create_crate(
     new_crate: Json<NewCrate>,
     db: DbConn,
+    _user: User,
 ) -> Result<Custom<Value>, Custom<Value>> {
     db.run(move |c| {
         CrateRepository::create(c, new_crate.into_inner())
@@ -44,6 +45,7 @@ pub async fn update_crate(
     id: i32,
     the_crate: Json<Crate>,
     db: DbConn,
+    _user: User,
 ) -> Result<Value, Custom<Value>> {
     db.run(move |c| {
         CrateRepository::save(c, id, the_crate.into_inner())
@@ -54,7 +56,7 @@ pub async fn update_crate(
 }
 
 #[rocket::delete("/crates/<id>")]
-pub async fn delete_crate(id: i32, db: DbConn) -> Result<NoContent, Custom<Value>> {
+pub async fn delete_crate(id: i32, db: DbConn, _user: User) -> Result<NoContent, Custom<Value>> {
     db.run(move |c| {
         CrateRepository::delete(c, id)
             .map(|_| NoContent)

@@ -1,6 +1,7 @@
 use crate::schema::*;
 use chrono::NaiveDateTime;
-use rocket::serde::{Deserialize, Serialize};
+use diesel::sql_types::Text;
+use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Deserialize, Serialize, AsChangeset)]
 #[diesel(table_name = rustaceans)]
@@ -65,7 +66,7 @@ pub struct NewUser {
 pub struct Role {
     pub id: i32,
     pub name: String,
-    pub code: String,
+    pub code: RoleCode,
     pub created_at: NaiveDateTime,
 }
 
@@ -73,7 +74,7 @@ pub struct Role {
 #[diesel(table_name = roles)]
 pub struct NewRole {
     pub name: String,
-    pub code: String,
+    pub code: RoleCode,
 }
 
 #[derive(Identifiable, Associations, Queryable, Debug)]
@@ -92,3 +93,23 @@ pub struct NewUserRole {
     pub user_id: i32,
     pub role_id: i32,
 }
+
+#[derive(AsExpression, Debug)]
+#[diesel(sql_type=Text)]
+pub enum RoleCode {
+    Admin,
+    Editor,
+    Viewer,
+}
+
+impl FromSql<Text, Pg> for RoleCode {
+    pub fn from_sql(value: PgValue) -> Result<self> {
+        match value.as_bytes() {
+            b"admin" => Ok(RoleCode::Admin),
+            b"editor" => Ok(RoleCode::Editor),
+            b"viewer" => Ok(RoleCode::Viewer),
+        }
+    }
+}
+
+impl ToSql<Text, Pg> for RoleCode {}
