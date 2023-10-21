@@ -1,10 +1,7 @@
-#[macro_use]
-extern crate diesel;
-
-pub mod auth;
+mod auth;
+pub mod commands;
+mod mail;
 mod models;
 mod repositories;
-
-pub mod commands;
 pub mod rocket_routes;
 mod schema;
